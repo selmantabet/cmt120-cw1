@@ -125,19 +125,77 @@ def exercise3(l):
 
 
 def exercise4(trans, init_state, input_list):
-    return None
+    state = init_state
+    trans_table = {}
+    output = []
+    # Build transition table in an improved format
+    for i in trans:
+        trans_table[tuple(i.split("/"))] = tuple(trans[i].split("/"))
+    for j in input_list:
+        output.append(trans_table[(state, j)][1])  # Append output
+        state = trans_table[(state, j)][0]  # Update state
+    return output
+
 
 # Exercise 5 - Document Stats
 
 
 def exercise5(filename):
-    return None
+    with open(filename, "r") as f:
+        lines = f.readlines()
+        print(lines)
+
+        alpha_chars = []
+        numeric_chars = []
+        symbol_chars = []
+        words = []
+
+        # Filter out empty lines
+        paragraph_indices = [index for (
+            index, item) in enumerate(lines) if item == '\n']
+        print(paragraph_indices)
+        paragraph_counter = 0
+        for i in enumerate(paragraph_indices):
+            # Last index case, out of bound otherwise
+            if i[0] == len(paragraph_indices)-1:
+                break
+            if (i[1]+1 == paragraph_indices[i[0]+1]):
+                paragraph_indices[i[0]] = -1
+        paragraph_fixed = list(filter(lambda x: x != -1, paragraph_indices))
+        paragraphs = len(paragraph_fixed) + 1
+        # Append filtered strings on a per-line basis
+        for i in lines:
+            alpha_chars.append(''.join(filter(str.isalpha, i)))
+            numeric_chars.append(''.join(filter(str.isnumeric, i)))
+            symbol_chars.append(''.join(
+                filter(lambda x: not str.isalnum(x) and not str.isspace(x), i)))
+            words_formatted = i.strip().replace(
+                "\n", "").replace("\r", "").replace("\t", "").replace("'", ".").replace("-", ".").replace(" ", ".").replace(",", ".").split(".")
+            # Extending this time because we're handling splitted strings (which are lists)
+            words.extend(words_formatted)
+
+        words = list(filter(lambda x: x != '', words))
+
+        # Combine all strings into one string for character counting.
+        all_alpha = ''.join(alpha_chars)
+        all_numeric = ''.join(numeric_chars)
+        all_symbol = ''.join(symbol_chars)
+        sentences = sum(1 for x in all_symbol if (
+            x == "?") or (x == "!") or (x == "."))
+
+    return (len(all_alpha), len(all_numeric), len(all_symbol), len(words), sentences, paragraphs)
+
 
 # Exercise 6 - List Depth
 
 
 def exercise6(l):
-    return None
+    depth = 1
+    for i in l:
+        if isinstance(i, list):
+            depth += 1
+            depth = max(depth, exercise6(i))
+    return depth
 
 # Exercise 7 - Change, please
 
