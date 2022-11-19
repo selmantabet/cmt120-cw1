@@ -1,5 +1,8 @@
 import copy
-
+"""
+Coursework 1 - CMT120 Programming - Cardiff University
+Author: Selman Tabet - https://selman.io/
+"""
 # Exercise 1 - Iris Species Classifier
 
 
@@ -143,7 +146,6 @@ def exercise4(trans, init_state, input_list):
 def exercise5(filename):
     with open(filename, "r") as f:
         lines = f.readlines()
-        print(lines)
 
         alpha_chars = []
         numeric_chars = []
@@ -153,8 +155,7 @@ def exercise5(filename):
         # Filter out empty lines
         paragraph_indices = [index for (
             index, item) in enumerate(lines) if item == '\n']
-        print(paragraph_indices)
-        paragraph_counter = 0
+
         for i in enumerate(paragraph_indices):
             # Last index case, out of bound otherwise
             if i[0] == len(paragraph_indices)-1:
@@ -190,10 +191,11 @@ def exercise5(filename):
 
 
 def exercise6(l):
-    depth = 1
+    depth = 1  # As far as the first level is concerned, it's already 1
     for i in l:
         if isinstance(i, list):
-            depth += 1
+            depth += 1  # At this point, there is an extra layer
+            # Recursively check for sublists, and update depth depending on whether the sublist goes further in depth.
             depth = max(depth, exercise6(i))
     return depth
 
@@ -201,7 +203,59 @@ def exercise6(l):
 
 
 def exercise7(amount, coins):
-    return None
+    # The Lookup Table - LUT
+    lookup_table = {
+        (0.00, 0): 0.0,
+        (0.01, 1): 0.01,
+        (0.02, 1): 0.02,
+        (0.05, 1): 0.05,
+        (0.1, 1): 0.1,
+        (0.2, 1): 0.2,
+        (0.5, 1): 0.5,
+        (1, 1): 1,
+        (2, 1): 2
+    }
+    lookup_key = (amount, int(coins))
+    if lookup_key in lookup_table:
+        return True
+    # (0,0) lookup already checked the case where they are both 0
+    if coins == 0 or amount == 0:
+        return False
+
+    coin_list = [2.0, 1.0, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01]
+    cmp = 0
+    while (cmp < len(coin_list)):
+        if (amount >= coin_list[cmp]):
+            amount -= coin_list[cmp]
+            coins -= 1
+            if (amount == 0) and (coins == 0):
+                return True
+            elif amount == 0:  # Revert change
+                amount += coin_list[cmp]
+                coins += 1
+                cmp += 1  # Seek lower denomination instead
+                continue
+            # Used the highest denomination every time and still need more coins, so, False.
+            elif coins == 0:
+                return False
+            else:
+                continue
+
+        else:
+            cmp += 1  # Seek lower denomination
+            continue
+    """
+    The while loop should terminate because of the following:
+    - The comparator variable (cmp) is incremented in each case escept the else clause.
+    meaning that after going through the entire list, the loop guard will turn false.
+    - In the else clause, the comparator is not incremented, but the amount and coins variables will be reduced.
+     * Sufficiently low amount will trigger the outer else clause, causing a cmp increment.
+     * Sufficiently low coins will trigger the inner else-if clause, exiting the function.
+    """
+    return False
+
+
+print(exercise7(2, 4))
 
 # Exercise 8 - Five Letter Unscramble
 
