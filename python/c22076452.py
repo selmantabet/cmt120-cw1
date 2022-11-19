@@ -255,15 +255,41 @@ def exercise7(amount, coins):
     return False
 
 
-print(exercise7(2, 4))
-
 # Exercise 8 - Five Letter Unscramble
 
 
-def exercise8(s):
-    return None
+WORDLE_DIR = "test_data/wordle.txt"
 
-# Exercise 9 - Wordle Set
+global permutations  # Global variable to store permutations
+permutations = []  # Initialize empty list on runtime
+
+
+def generate_permutations(start, end=[]):
+    # Default end value is an empty list, but the argument will be used for recusrive calls
+    if len(start) == 0:
+        permutations.append("".join(end))
+    else:
+        for i in range(len(start)):
+            generate_permutations(start[:i] + start[i+1:], end + start[i:i+1])
+
+
+def exercise8(s):
+    with open(WORDLE_DIR, "r") as f:
+        words = f.readlines()
+        for i in range(len(words)):
+            words[i] = words[i].replace("\n", "")
+
+    permutations.clear()  # Clear the global variable to ensure correct results
+    generate_permutations(list(s))
+    filtered_permutations = list(set(permutations))
+    permutations.clear()  # Clear the global variable for the next call
+    result = []
+    for i in filtered_permutations:
+        for j in words:
+            if j in i:  # Some permutation strings might constitute the word itself
+                result.append(j)
+    # Duplicates exist since some permutations might constitute the word itself, like "househ" and "hhouse"
+    return len((set(result)))
 
 
 def exercise9(green, yellow, gray):
