@@ -225,10 +225,19 @@ def exercise7(amount, coins):
     coin_list = [2.0, 1.0, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01]
     cmp = 0
     while (cmp < len(coin_list)):
+        for i in range(len(coin_list)):
+            # Convert from primary unit float to subunit (cents/pennies) integer representation
+            if (int(amount*100) % int(coin_list[i]*100) == 0):
+                # Coins must be appropriately exhausted
+                if (int(amount*100) / int(coin_list[i]*100) == coins):
+                    # If the amount is a multiple of the coin (and fits coin quota), it's possible to make change
+                    return True
+
         if (amount >= coin_list[cmp]):
             amount -= coin_list[cmp]
             coins -= 1
-            if (amount == 0) and (coins == 0):
+            # This check would prevent an extra iteration earlier.
+            if (amount, coins) in lookup_table:
                 return True
             elif amount == 0:  # Revert change
                 amount += coin_list[cmp]
@@ -255,6 +264,11 @@ def exercise7(amount, coins):
     return False
 
 
+# for amt in range(50, 500, 4):
+#     for cns in range(1, 10):
+#         print(
+#             f"Amount: {amt/100} and Coins: {cns}, it is {exercise7(amt/100, cns)}")
+
 # Exercise 8 - Five Letter Unscramble
 
 
@@ -275,9 +289,7 @@ def generate_permutations(start, end=[]):
 
 def exercise8(s):
     with open(WORDLE_DIR, "r") as f:
-        words = f.readlines()
-        for i in range(len(words)):
-            words[i] = words[i].replace("\n", "")
+        words = f.read().split("\n")
 
     permutations.clear()  # Clear the global variable to ensure correct results
     generate_permutations(list(s))
@@ -293,7 +305,61 @@ def exercise8(s):
 
 
 def exercise9(green, yellow, gray):
-    return None
+    with open(WORDLE_DIR, "r") as f:
+        words = f.read().split("\n")
+    filtered_words = set(words)
+
+    for i in words:
+        for j in i:  # Gray filter
+            if j in gray:
+                filtered_words.remove(i)
+                break
+
+    for i in words:  # Green filter
+        for j in green:
+            if i[j] != green[j]:
+                try:
+                    filtered_words.remove(i)
+                except KeyError:  # Already removed from previous filter
+                    pass
+                finally:
+                    break
+
+    for i in words:  # Yellow filter
+        for j in yellow:
+            if j not in i:
+                try:
+                    filtered_words.remove(i)
+                except KeyError:  # Already removed from previous filter
+                    pass
+                finally:
+                    break
+
+    result = list(filtered_words)
+
+    # The final filter; removes all words that have yellow marked letters in them that we already know are in the positions.
+    for i in filtered_words:
+        for j in enumerate(i):
+            try:
+                # Retrieve known wrong positions of the correct letter
+                letter_indices = yellow[j[1]]
+                # Test if the current index is in the set of known wrong positions
+                if j[0] in letter_indices:
+                    try:
+                        result.remove(i)
+                    except KeyError:  # Already removed from previous filter
+                        pass
+                    finally:
+                        break
+            except KeyError:  # Untested letter, move on to the next one.
+                continue
+
+    return len(result)
+
+
+# exercise9({1: 'i', 3: 'c'}, {'e': {3}}, {'r', 'a', 's', 'd', 'f'})
+# exercise9({2: 'a'}, {'a': {3}, 'i': {2}, 'l': {3, 4}, 'r': {1}},
+#           {'p', 'g', 'c', 'u', 'h', 'o', 'e', 't', 'm', 's'})
 
 # Exercise 10 - One Step of Wordle
 

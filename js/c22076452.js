@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { isAnyArrayBuffer } = require('util/types');
 
 module.exports = {
 
@@ -85,8 +86,40 @@ module.exports = {
     },
 
     // Exercise 3 - Basic Statistics
+    median: (array) => {
+        let sorted_array = array.sort((a, b) => a - b)
+        let array_length = sorted_array.length
+        if (array_length % 2 == 0) { // Two midpoint values to even out
+            return (sorted_array[array_length/2] + sorted_array[array_length/2 - 1])/2
+        }
+        else {
+            return sorted_array[Math.floor(array_length/2)]
+        }
+    },
+    
+    sumArray: (total, item) => {
+        return total + item;
+      },
+    
+    arrAverage: (array) => {
+        return array.reduce(module.exports.sumArray(array))/array.length;
+    },
+    // maxArray: (array) => {
+    //     array.sort();
+    //     return array[array.length-1];
+    // },
+    // minArray: (array) => {
+    //     array.sort();
+    //     return array[0];
+    // },
+
     exercise3: (l) => {
-        return undefined;
+        l_squared = l.map(x => x**2);
+        let l_avg = module.exports.arrAverage(l)
+        let l_squared_avg = module.exports.arrAverage(l_squared)
+        let result = [[Math.min(l), l_avg, module.exports.median(l), Math.max(l)],
+        [Math.min(l_squared), l_squared_avg, module.exports.median(l_squared), Math.max(l_squared)]];
+        return result;
     },
 
     // Exercise 4 - Finite-State Machine Simulator
@@ -124,3 +157,4 @@ module.exports = {
         return undefined;
     },
 }
+
