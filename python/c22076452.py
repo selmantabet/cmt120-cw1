@@ -236,12 +236,14 @@ def exercise7(amount, coins):
         if (amount >= coin_list[cmp]):
             amount -= coin_list[cmp]
             coins -= 1
+            amount = round(amount, 2)  # Python float fix
             # This check would prevent an extra iteration earlier.
             if (amount, coins) in lookup_table:
                 return True
             elif amount == 0:  # Revert change
                 amount += coin_list[cmp]
                 coins += 1
+                amount = round(amount, 2)  # Python float fix
                 cmp += 1  # Seek lower denomination instead
                 continue
             # Used the highest denomination every time and still need more coins, so, False.
@@ -268,7 +270,7 @@ def exercise7(amount, coins):
 #     for cns in range(1, 10):
 #         print(
 #             f"Amount: {amt/100} and Coins: {cns}, it is {exercise7(amt/100, cns)}")
-
+# print(exercise7(4.46, 5))
 # Exercise 8 - Five Letter Unscramble
 
 
@@ -364,5 +366,33 @@ def exercise9(green, yellow, gray):
 # Exercise 10 - One Step of Wordle
 
 
-def exercise10(green, yellow, gray):
-    return None
+# def exercise10(green, yellow, gray):
+#     with open(WORDLE_DIR, "r") as f:
+#         words = f.read().split("\n")
+#     config_list = []
+#     for v in words:
+#         words_tmp = words
+#         words_tmp.remove(v)
+#         word_config = {"green": {}, "yellow": {}, "gray": set()}
+#         for w in words_tmp:
+#             for k in enumerate(w):  # w1,w2,w3...
+#                 if k[1] == v[k[0]]:  # wi = vi
+#                     try:
+#                         word_config["green"][k[0]] = k[1]
+#                     except KeyError:
+#                         # green[k[1]] = {k[0]}
+#                         pass
+#                 elif k[1] in v:
+#                     try:
+#                         word_config["yellow"][k[1]].add(k[0])
+#                     except KeyError:
+#                         word_config["yellow"][k[1]] = {k[0]}
+#                 else:
+#                     try:
+#                         green[k[0]] = k[1]
+#                     except KeyError:
+#                         green[k[0]] = k[1]
+#         word_config = {}
+#         for j in enumerate(i):
+#             if (j[1] in i) and
+#     return None
