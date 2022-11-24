@@ -236,14 +236,14 @@ def exercise7(amount, coins):
         if (amount >= coin_list[cmp]):
             amount -= coin_list[cmp]
             coins -= 1
-            amount = round(amount, 2)  # Python float fix
+            amount = round(amount, 2)  # Python float fix (e.g 1.4-1)
             # This check would prevent an extra iteration earlier.
             if (amount, coins) in lookup_table:
                 return True
             elif amount == 0:  # Revert change
                 amount += coin_list[cmp]
                 coins += 1
-                amount = round(amount, 2)  # Python float fix
+                amount = round(amount, 2)  # Python float fix (e.g 1.4-1)
                 cmp += 1  # Seek lower denomination instead
                 continue
             # Used the highest denomination every time and still need more coins, so, False.
@@ -306,7 +306,7 @@ def exercise8(s):
     return len((set(result)))
 
 
-def exercise9(green, yellow, gray):
+def generate_wordle_set(green, yellow, gray):
     with open(WORDLE_DIR, "r") as f:
         words = f.read().split("\n")
     filtered_words = set(words)
@@ -356,7 +356,11 @@ def exercise9(green, yellow, gray):
             except KeyError:  # Untested letter, move on to the next one.
                 continue
 
-    return len(result)
+    return result
+
+
+def exercise9(green, yellow, gray):
+    return len(generate_wordle_set(green, yellow, gray))
 
 
 # exercise9({1: 'i', 3: 'c'}, {'e': {3}}, {'r', 'a', 's', 'd', 'f'})
@@ -366,33 +370,50 @@ def exercise9(green, yellow, gray):
 # Exercise 10 - One Step of Wordle
 
 
-# def exercise10(green, yellow, gray):
-#     with open(WORDLE_DIR, "r") as f:
-#         words = f.read().split("\n")
-#     config_list = []
-#     for v in words:
-#         words_tmp = words
-#         words_tmp.remove(v)
-#         word_config = {"green": {}, "yellow": {}, "gray": set()}
-#         for w in words_tmp:
-#             for k in enumerate(w):  # w1,w2,w3...
-#                 if k[1] == v[k[0]]:  # wi = vi
-#                     try:
-#                         word_config["green"][k[0]] = k[1]
-#                     except KeyError:
-#                         # green[k[1]] = {k[0]}
-#                         pass
-#                 elif k[1] in v:
-#                     try:
-#                         word_config["yellow"][k[1]].add(k[0])
-#                     except KeyError:
-#                         word_config["yellow"][k[1]] = {k[0]}
-#                 else:
-#                     try:
-#                         green[k[0]] = k[1]
-#                     except KeyError:
-#                         green[k[0]] = k[1]
-#         word_config = {}
-#         for j in enumerate(i):
-#             if (j[1] in i) and
-#     return None
+def exercise10(green, yellow, gray):
+    words = generate_wordle_set(green, yellow, gray)  # Retrieve the wordle set
+    # This is will store cardinality scores as keys to the set of words with that score
+    word_scores = {}
+
+    for v in words:
+        # This will store the cardinalities of the wordle sets from all other words' configurations
+        cardinalities = []
+        # Copy the list to avoid modifying the original
+        words_no_v = copy.deepcopy(words)
+        # This allows us to scan every OTHER word in the set
+        words_no_v.remove(v)
+
+        for w in words_no_v:
+            # Define original configuration using the original parameters (copied)
+            word_config = {"green": copy.deepcopy(green), "yellow": copy.deepcopy(
+                yellow), "gray": copy.deepcopy(gray)}
+
+            for k in enumerate(v):  # v_1,v_2,v_3...
+                if k[1] == w[k[0]]:  # v_i = w_i
+                    word_config["green"][k[0]] = k[1]
+                elif k[1] in w:  # In w but not in the same position
+                    try:
+                        word_config["yellow"][k[1]].add(k[0])
+                    except KeyError:  # New letter, add to yellow dictionary
+                        word_config["yellow"][k[1]] = {k[0]}
+                else:  # Add to gray set
+                    word_config["gray"].add(k[1])
+            # Calculate cardinality of the new configuration
+            word_cardinality = exercise9(
+                word_config["green"], word_config["yellow"], word_config["gray"])
+            # Add the cardinality to the list of cardinalities for v
+            cardinalities.append(word_cardinality)
+
+        # Calculate the score by summing cardinalities, then add it to the dictionary
+        score = sum(cardinalities)
+        try:  # In case a word has the same score as another
+            word_scores[score].add(v)
+        except KeyError:  # New score value, add to dictionary
+            word_scores[score] = {v}
+
+    lowest_score = min(word_scores.keys())  # Retrieve the lowest score key
+    # Return the set of words with the lowest score
+    return word_scores[lowest_score]
+
+
+# exercise10({1: 'i', 3: 'c'}, {'e': {3}}, {'r', 'a', 's', 'd', 'f'})
