@@ -68,7 +68,7 @@ def exercise2(breed, height, weight, male):
             }
         }
     }
-    margin = 0.1
+    margin = 0.1  # 10% margin, predefined.
     if (male):
         sex_field = "Male"
     else:
@@ -223,8 +223,10 @@ def exercise7(amount, coins):
         return False
 
     coin_list = [2.0, 1.0, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01]
+    # Index of the denomination to consider for change (coin_list[cmp])
     cmp = 0
     while (cmp < len(coin_list)):
+        # Check if it's perfectly divisible by any single denomination (e.g. amt=50, coin=25)
         for i in range(len(coin_list)):
             # Convert from primary unit float to subunit (cents/pennies) integer representation
             condition_1 = int(amount*100) % int(coin_list[i]*100) == 0
@@ -251,14 +253,14 @@ def exercise7(amount, coins):
             elif coins == 0:
                 return False
             else:
-                continue
+                continue  # Keep trying with the same denomination
 
         else:
             cmp += 1  # Seek lower denomination
             continue
     """
     The while loop should terminate because of the following:
-    - The comparator variable (cmp) is incremented in each case escept the else clause.
+    - The comparator variable (cmp) is incremented in each case except the else clause.
     meaning that after going through the entire list, the loop guard will turn false.
     - In the else clause, the comparator is not incremented, but the amount and coins variables will be reduced.
      * Sufficiently low amount will trigger the outer else clause, causing a cmp increment.
@@ -282,11 +284,12 @@ permutations = []  # Initialize empty list on runtime
 
 
 def generate_permutations(start, end=[]):
-    # Default end value is an empty list, but the argument will be used for recusrive calls
+    # Default end value is an empty list, but the argument will be used for recursive calls
     if len(start) == 0:
         permutations.append("".join(end))
     else:
         for i in range(len(start)):
+            # Fix the first character, and generate permutations for the rest of the string
             generate_permutations(start[:i] + start[i+1:], end + start[i:i+1])
 
 
@@ -296,7 +299,7 @@ def exercise8(s):
 
     permutations.clear()  # Clear the global variable to ensure correct results
     generate_permutations(list(s))
-    filtered_permutations = list(set(permutations))
+    filtered_permutations = list(set(permutations))  # Get rid of duplicates
     permutations.clear()  # Clear the global variable for the next call
     result = []
     for i in filtered_permutations:
@@ -317,43 +320,35 @@ def generate_wordle_set(green, yellow, gray):
             if j in gray:
                 filtered_words.remove(i)
                 break
-
-    for i in words:  # Green filter
-        for j in green:
-            if i[j] != green[j]:
+        for k in green:  # Green filter
+            if i[k] != green[k]:  # Not a match
                 try:
                     filtered_words.remove(i)
                 except KeyError:  # Already removed from previous filter
                     pass
                 finally:
-                    break
-
-    for i in words:  # Yellow filter
-        for j in yellow:
-            if j not in i:
+                    break  # No need to check the rest of the word
+        for l in yellow:  # Yellow filter
+            if l not in i:  # Yellow letter not found
                 try:
                     filtered_words.remove(i)
                 except KeyError:  # Already removed from previous filter
                     pass
                 finally:
-                    break
+                    break  # No need to check the rest of the word
 
     result = list(filtered_words)
 
-    # The final filter; removes all words that have yellow marked letters in them that we already know are in the positions.
+    # The final filter; removes all words that have yellow marked letters in in what we know to be the wrong position.
     for i in filtered_words:
         for j in enumerate(i):
             try:
                 # Retrieve known wrong positions of the correct letter
-                letter_indices = yellow[j[1]]
+                letter_indices = yellow[j[1]]  # <- KeyError failure point
                 # Test if the current index is in the set of known wrong positions
-                if j[0] in letter_indices:
-                    try:
-                        result.remove(i)
-                    except KeyError:  # Already removed from previous filter
-                        pass
-                    finally:
-                        break
+                if j[0] in letter_indices:  # Correct letter in the wrong position
+                    result.remove(i)
+                    break
             except KeyError:  # Untested letter, move on to the next one.
                 continue
 
@@ -361,6 +356,7 @@ def generate_wordle_set(green, yellow, gray):
 
 
 def exercise9(green, yellow, gray):
+    # Cardinality of the set
     return len(generate_wordle_set(green, yellow, gray))
 
 
