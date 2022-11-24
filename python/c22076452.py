@@ -227,11 +227,12 @@ def exercise7(amount, coins):
     while (cmp < len(coin_list)):
         for i in range(len(coin_list)):
             # Convert from primary unit float to subunit (cents/pennies) integer representation
-            if (int(amount*100) % int(coin_list[i]*100) == 0):
-                # Coins must be appropriately exhausted
-                if (int(amount*100) / int(coin_list[i]*100) == coins):
-                    # If the amount is a multiple of the coin (and fits coin quota), it's possible to make change
-                    return True
+            condition_1 = int(amount*100) % int(coin_list[i]*100) == 0
+            # Coins must be appropriately exhausted
+            condition_2 = int(amount*100) / int(coin_list[i]*100) == coins
+            if (condition_1 and condition_2):
+                # If the amount is a multiple of the coin (and fits coin quota), it's possible to make change
+                return True
 
         if (amount >= coin_list[cmp]):
             amount -= coin_list[cmp]
