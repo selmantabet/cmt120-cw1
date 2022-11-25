@@ -266,7 +266,7 @@ def exercise7(amount, coins):
      * Sufficiently low amount will trigger the outer else clause, causing a cmp increment.
      * Sufficiently low coins will trigger the inner else-if clause, exiting the function.
     """
-    return False
+    return True
 
 
 # for amt in range(50, 500, 4):
