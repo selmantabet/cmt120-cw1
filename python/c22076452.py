@@ -227,11 +227,11 @@ def exercise7(amount, coins):
     cmp = 0
     while (cmp < len(coin_list)):
         # Check if it's perfectly divisible by any single denomination (e.g. amt=50, coin=25)
-        for i in range(len(coin_list)):
+        for coin in coin_list:
             # Convert from primary unit float to subunit (cents/pennies) integer representation
-            condition_1 = int(amount*100) % int(coin_list[i]*100) == 0
+            condition_1 = int(amount*100) % int(coin*100) == 0
             # Coins must be appropriately exhausted
-            condition_2 = int(amount*100) / int(coin_list[i]*100) == coins
+            condition_2 = int(amount*100) / int(coin*100) == coins
             if (condition_1 and condition_2):
                 # If the amount is a multiple of the coin (and fits coin quota), it's possible to make change
                 return True
@@ -273,7 +273,7 @@ def exercise7(amount, coins):
 #     for cns in range(1, 10):
 #         print(
 #             f"Amount: {amt/100} and Coins: {cns}, it is {exercise7(amt/100, cns)}")
-# print(exercise7(4.46, 5))
+print(exercise7(0.13, 6))
 # Exercise 8 - Five Letter Unscramble
 
 
