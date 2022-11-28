@@ -86,45 +86,34 @@ module.exports = {
     },
 
     // Exercise 3 - Basic Statistics
-    median: (array) => {
-        let sorted_array = array.sort((a, b) => a - b)
-        let array_length = sorted_array.length
-        if (array_length % 2 == 0) { // Two midpoint values to even out
-            return (sorted_array[array_length/2] + sorted_array[array_length/2 - 1])/2
-        }
-        else {
-            return sorted_array[Math.floor(array_length/2)]
-        }
-    },
-    
-    sumArray: (total, item) => {
-        return total + item;
-      },
-    
-    arrAverage: (array) => {
-        return array.reduce(module.exports.sumArray(array))/array.length;
-    },
-    // maxArray: (array) => {
-    //     array.sort();
-    //     return array[array.length-1];
-    // },
-    // minArray: (array) => {
-    //     array.sort();
-    //     return array[0];
-    // },
-
     exercise3: (l) => {
-        l_squared = l.map(x => x**2);
-        let l_avg = module.exports.arrAverage(l)
-        let l_squared_avg = module.exports.arrAverage(l_squared)
-        let result = [[Math.min(l), l_avg, module.exports.median(l), Math.max(l)],
-        [Math.min(l_squared), l_squared_avg, module.exports.median(l_squared), Math.max(l_squared)]];
+        let l_squared = l.map(x => x**2);
+        let l_avg = arrAverage(l)
+        let l_squared_avg = arrAverage(l_squared)
+        let max_l = l.reduce(maxArray, -Infinity);
+        let min_l = l.reduce(minArray, Infinity);
+        let max_l_squared = l_squared.reduce(maxArray, -Infinity);
+        let min_l_squared = l_squared.reduce(minArray, Infinity);
+        let result = [[min_l, l_avg, median(l), max_l],
+        [min_l_squared, l_squared_avg, median(l_squared), max_l_squared]];
         return result;
     },
 
     // Exercise 4 - Finite-State Machine Simulator
     exercise4: (trans, init_state, input_list) => {
-        return undefined;
+        let state = init_state;
+        let output = [];
+        for(let i=0; i<input_list.length; i++){
+            let input = input_list[i];
+            let lookup = `${state}/${input}`;
+            let output = trans[lookup];
+            let output_split = output.split("/");
+            console.log(output_split);
+            state = output_split[0];
+            output.push(output_split[1]);
+        }
+        
+        return output;
     },
 
     // Exercise 5 - Document Stats
@@ -158,3 +147,35 @@ module.exports = {
     },
 }
 
+/*
+############################################ 
+            Auxiliary functions
+############################################
+*/
+
+function median(array) {
+    let sorted_array = array.sort((a, b) => a - b)
+    let array_length = sorted_array.length
+    if (array_length % 2 == 0) { // Two midpoint values to even out
+        return (sorted_array[array_length/2] + sorted_array[array_length/2 - 1])/2
+    }
+    else {
+        return sorted_array[Math.floor(array_length/2)]
+    }
+}
+
+function maxArray(total,item) {
+    return Math.max(total,item);
+}
+
+function minArray(total,item) {
+    return Math.min(total,item);
+}
+
+function sumArray(total, item) {
+    return total + item;
+  }
+
+function arrAverage(array) {
+    return array.reduce(sumArray)/array.length;
+}
