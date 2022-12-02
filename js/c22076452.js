@@ -102,28 +102,92 @@ module.exports = {
     // Exercise 4 - Finite-State Machine Simulator
     exercise4: (trans, init_state, input_list) => {
         let state = init_state;
-        let output = [];
+        let result = [];
         for(let i=0; i<input_list.length; i++){
             let input = input_list[i];
             let lookup = `${state}/${input}`;
             let output = trans[lookup];
             let output_split = output.split("/");
-            console.log(output_split);
             state = output_split[0];
-            output.push(output_split[1]);
+            result.push(output_split[1]);
         }
         
-        return output;
+        return result;
     },
 
     // Exercise 5 - Document Stats
     exercise5: (filename) => {
-        return undefined;
+        const data = fs.readFileSync(filename, "utf8");
+        console.log(data);
+        let lines = data.split('\n');
+        console.log(lines);
+        let letterCounter = 0;
+        let digitCounter = 0;
+        let symbolCounter = 0
+        let wordCounter = 0;
+        let sentenceCounter = 0;
+        for (let i=0; i<lines.length; i++){
+            // Remove all non-letter characters (negated alpha set) and measure length
+            let lettersOnly = lines[i].replace(/[^a-zA-Z]+/g, '').length;
+            let numbersOnly = lines[i].replace(/[^0-9]+/g, '').length;
+            let symbolsOnly = lines[i].replace(/[^-'".,]+/g, '').length;
+            let sentencesOnly = lines[i].replace(/[^.!?]+/g, '').length;
+            var wordsOnly = 0;
+            // console.log(lines[i], "- has", lettersOnly, "letters");
+            // console.log(lines[i], "- has", numbersOnly, "digits");
+            // console.log(lines[i], "- has", symbolsOnly, "symbols");
+            // console.log(lines[i], "- has", sentencesOnly, "sentences");
+            if (lines[i].length != 0){
+                wordsOnly = lines[i].match(/(\w+)/g).length;
+            }
+            // console.log("Letters:",lines[i].replace(/[^a-zA-Z]/g, ''));
+            
+            // console.log(lines[i], "- has", wordsOnly, "words");
+            letterCounter += lettersOnly;
+            digitCounter += numbersOnly;
+            symbolCounter += symbolsOnly;
+            wordCounter += wordsOnly;
+            sentenceCounter += sentencesOnly;
+        }
+        var paragraphsCounter = 0;
+        var flag = false;
+        for (let j=0; j<lines.length; j++){
+            if ((lines[j].length == 0) && (flag == false)){
+                // console.log("Paragraph found");
+                paragraphsCounter += 1;
+                flag = true;
+                continue;
+            }
+            if (lines[j].length == 0){
+                // console.log("Extra empty line found");
+                continue;
+            }
+            else{
+                // console.log("Line found");
+                flag = false;
+            }
+        }
+        if (flag == false){
+            // In case the last paragraph was not counted due to lack of empty line
+            paragraphsCounter += 1;
+        }
+        let result = [letterCounter, digitCounter, symbolCounter, wordCounter, sentenceCounter, paragraphsCounter];
+        // console.log(result)
+        return result;
     },
 
     // Exercise 6 - List Depth
     exercise6: (l) => {
-        return undefined;
+        var depth = 1  // As far as the first level is concerned, it's already 1
+        for (let i=0; i<l.length; i++){
+            if (typeof l[i] == 'object'){
+                console.log("Found a list");
+                depth += 1  // At this point, there is an extra layer
+                // Recursively check for sublists, and update depth depending on whether the sublist goes further in depth.
+                depth = Math.max(depth, module.exports.exercise6(l[i]))
+            }
+        }
+        return depth
     },
 
     // Exercise 7 - Change, please
