@@ -39,45 +39,17 @@ def exercise1(SepalLen, SepalWid, PetalLen, PetalWid):
 
 def exercise2(breed, height, weight, male):
     data_table = {
-        "Male": {
-            "Bulldog": {
-                "height": 15,
-                "weight": 50
-            },
-            "Dalmatian": {
-                "height": 24,
-                "weight": 70
-            },
-            "Maltese": {
-                "height": 9,
-                "weight": 7
-            }
-        },
-        "Female": {
-            "Bulldog": {
-                "height": 14,
-                "weight": 40
-            },
-            "Dalmatian": {
-                "height": 19,
-                "weight": 45
-            },
-            "Maltese": {
-                "height": 7,
-                "weight": 6
-            }
-        }
+        (True, "Bulldog"): (15, 50),
+        (True, "Dalmatian"): (24, 70),
+        (True, "Maltese"): (9, 7),
+        (False, "Bulldog"): (14, 40),
+        (False, "Dalmatian"): (19, 45),
+        (False, "Maltese"): (7, 6)
     }
     margin = 0.1  # 10% margin, predefined.
-    if (male):
-        sex_field = "Male"
-    else:
-        sex_field = "Female"
 
     # Retrieve dog breed data
-    breed_data = data_table[sex_field][breed]
-    weight_avg = breed_data["weight"]
-    height_avg = breed_data["height"]
+    height_avg, weight_avg = data_table[(male, breed)]
 
     # Compute boundary values
     max_height = height_avg*(1+margin)
