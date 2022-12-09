@@ -118,9 +118,7 @@ module.exports = {
     // Exercise 5 - Document Stats
     exercise5: (filename) => {
         const data = fs.readFileSync(filename, "utf8");
-        console.log(data);
         let lines = data.split('\n');
-        console.log(lines);
         let letterCounter = 0;
         let digitCounter = 0;
         let symbolCounter = 0
@@ -133,16 +131,10 @@ module.exports = {
             let symbolsOnly = lines[i].replace(/[^-'".,]+/g, '').length;
             let sentencesOnly = lines[i].replace(/[^.!?]+/g, '').length;
             var wordsOnly = 0;
-            // console.log(lines[i], "- has", lettersOnly, "letters");
-            // console.log(lines[i], "- has", numbersOnly, "digits");
-            // console.log(lines[i], "- has", symbolsOnly, "symbols");
-            // console.log(lines[i], "- has", sentencesOnly, "sentences");
             if (lines[i].length != 0){
                 wordsOnly = lines[i].match(/(\w+)/g).length;
             }
-            // console.log("Letters:",lines[i].replace(/[^a-zA-Z]/g, ''));
-            
-            // console.log(lines[i], "- has", wordsOnly, "words");
+
             letterCounter += lettersOnly;
             digitCounter += numbersOnly;
             symbolCounter += symbolsOnly;
@@ -153,17 +145,14 @@ module.exports = {
         var flag = false;
         for (let j=0; j<lines.length; j++){
             if ((lines[j].length == 0) && (flag == false)){
-                // console.log("Paragraph found");
                 paragraphsCounter += 1;
                 flag = true;
                 continue;
             }
             if (lines[j].length == 0){
-                // console.log("Extra empty line found");
                 continue;
             }
             else{
-                // console.log("Line found");
                 flag = false;
             }
         }
@@ -172,7 +161,6 @@ module.exports = {
             paragraphsCounter += 1;
         }
         let result = [letterCounter, digitCounter, symbolCounter, wordCounter, sentenceCounter, paragraphsCounter];
-        // console.log(result)
         return result;
     },
 
@@ -181,7 +169,6 @@ module.exports = {
         var depth = 1  // As far as the first level is concerned, it's already 1
         for (let i=0; i<l.length; i++){
             if (typeof l[i] == 'object'){
-                console.log("Found a list");
                 depth += 1  // At this point, there is an extra layer
                 // Recursively check for sublists, and update depth depending on whether the sublist goes further in depth.
                 depth = Math.max(depth, module.exports.exercise6(l[i]))
@@ -192,17 +179,57 @@ module.exports = {
 
     // Exercise 7 - Change, please
     exercise7: (amount,coins) => {
-        return undefined;
+        let amt = amount*100;
+        if (coins==0){
+            if (amount==0){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        let denominations = [200, 100, 50, 20, 10, 5, 2, 1]
+        if (coins == 1){
+            if (denominations.includes(amt)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        ;
+        for (let i=0; i<denominations.length; i++){
+            if (module.exports.exercise7((amt-denominations[i])/100, coins-1)){
+                return true;
+            }
+        }
+        
+        return false;
     },
 
     // Exercise 8 - Five Letter Unscramble
     exercise8: (s) => {
-        return undefined;
+        const data = fs.readFileSync("test_data/wordle.txt", "utf8");
+        let words = data.split('\n');
+        
+        let permutation = permutations(s);
+        let permutationSet = new Set(permutation);
+
+        let result = new Set();
+        permutationSet.forEach(value => {
+            for (let k=0; k<words.length; k++){
+                if (value.includes(words[k])){
+                    result.add(words[k]);
+                }
+            }
+        })
+        return result.size;
     },
 
     // Exercise 9 - Wordle Set
     exercise9: (green,yellow,gray) => {
-        return undefined;
+        words = generateWordleSet(green,yellow,gray);
+        return words.size;
     },
 
     // Exercise 10 - One Step of Wordle
@@ -242,4 +269,89 @@ function sumArray(total, item) {
 
 function arrAverage(array) {
     return array.reduce(sumArray)/array.length;
+}
+
+
+function permutations(input) {
+    var results = [];
+    if (input.length === 1) {
+        results.push(input);
+        return results;
+    }
+    for (let i = 0; i < input.length; i++) {
+        let firstChar = input[i];
+        let charsRemaining = input.substring(0, i) + input.substring(i + 1);
+        let innerPermutations = permutations(charsRemaining);
+        for (let j = 0; j < innerPermutations.length; j++) {
+            results.push(firstChar + innerPermutations[j]);
+        }
+    }
+    return results;
+};
+
+function generateWordleSet(green, yellow, gray) {
+    const data = fs.readFileSync("test_data/wordle.txt", "utf8");
+    let words = new Set(data.split('\n'));
+    let wordsArray = Array.from(words);
+
+    let greenIndices = Object.keys(green);
+    let greenValues = Object.values(green);
+    let yellowLetters = Object.keys(yellow);
+
+    for (let i=0; i<wordsArray.length; i++){
+        let word = wordsArray[i];
+
+
+        let grayFilter = false;
+        for (let j = 0; j<word.length; j++){
+            if (gray.has(word[j])){
+                grayFilter = true;
+                break;
+            }
+        }
+        if (grayFilter){
+            words.delete(word);
+            continue;
+        }
+
+        let yellowFilter = false;
+        yellowLetters.forEach(yellowLetter => {
+            if (!word.includes(yellowLetter)){
+                yellowFilter = true;
+            }
+        })
+        if (yellowFilter){
+            words.delete(word);
+            continue;
+        }
+
+        let greenFilter = false;
+        for (let j=0; j<greenIndices.length; j++){
+            if (word[greenIndices[j]] != green[greenIndices[j]]){
+                greenFilter = true;
+                break;
+            }
+        }
+
+        if (greenFilter){
+            words.delete(word);
+            continue;
+        }
+    }
+
+    // FINAL FILTER STAGE
+    let result = words;
+    words.forEach(word => {
+        for (let i=0; i<word.length; i++){
+            if (yellowLetters.includes(word[i])){
+                let letterIndices = yellow[word[i]];
+                if (letterIndices.has(i)){
+                    result.delete(word);
+                    break;
+                }
+            }
+            else continue;
+        }
+    })
+    return words;
 }
