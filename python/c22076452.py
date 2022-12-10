@@ -195,14 +195,6 @@ def exercise7(amount, coins):
     return False
 
 
-# for amt in range(50, 500, 4):
-#     for cns in range(1, 10):
-#         print(
-#             f"Amount: {amt/100} and Coins: {cns}, it is {exercise7(amt/100, cns)}")
-# print(exercise7(0.13, 6))
-# Exercise 8 - Five Letter Unscramble
-
-
 WORDLE_DIR = "test_data/wordle.txt"
 
 global permutations  # Global variable to store permutations

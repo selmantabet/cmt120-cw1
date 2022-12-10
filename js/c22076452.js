@@ -197,7 +197,6 @@ module.exports = {
                 return false;
             }
         }
-        ;
         for (let i=0; i<denominations.length; i++){
             if (module.exports.exercise7((amt-denominations[i])/100, coins-1)){
                 return true;
