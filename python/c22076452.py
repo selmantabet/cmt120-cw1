@@ -175,77 +175,31 @@ def exercise6(l):
 
 
 def exercise7(amount, coins):
-    # The Lookup Table - LUT
-    lookup_table = {
-        (0.00, 0): 0.0,
-        (0.01, 1): 0.01,
-        (0.02, 1): 0.02,
-        (0.05, 1): 0.05,
-        (0.1, 1): 0.1,
-        (0.2, 1): 0.2,
-        (0.5, 1): 0.5,
-        (1, 1): 1,
-        (2, 1): 2
-    }
-    lookup_key = (amount, int(coins))
-    if lookup_key in lookup_table:
-        return True
-    # (0,0) lookup already checked the case where they are both 0
-    if coins == 0 or amount == 0:
-        return False
-
-    coin_list = [2.0, 1.0, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01]
-    # Index of the denomination to consider for change (coin_list[cmp])
-    cmp = 0
-    while (cmp < len(coin_list)):
-        # Check if it's perfectly divisible by any single denomination (e.g. amt=50, coin=25)
-        for coin in coin_list:
-            # Convert from primary unit float to subunit (cents/pennies) integer representation
-            condition_1 = int(amount*100) % int(coin*100) == 0
-            # Coins must be appropriately exhausted
-            condition_2 = int(amount*100) / int(coin*100) == coins
-            if (condition_1 and condition_2):
-                # If the amount is a multiple of the coin (and fits coin quota), it's possible to make change
-                return True
-
-        if (amount >= coin_list[cmp]):
-            amount -= coin_list[cmp]
-            coins -= 1
-            amount = round(amount, 2)  # Python float fix (e.g 1.4-1)
-            # This check would prevent an extra iteration earlier.
-            if (amount, coins) in lookup_table:
-                return True
-            elif amount == 0:  # Revert change
-                amount += coin_list[cmp]
-                coins += 1
-                amount = round(amount, 2)  # Python float fix (e.g 1.4-1)
-                cmp += 1  # Seek lower denomination instead
-                continue
-            # Used the highest denomination every time and still need more coins, so, False.
-            elif coins == 0:
-                return False
-            else:
-                continue  # Keep trying with the same denomination
-
+    # Base case
+    amt = amount*100
+    if (coins == 0):
+        if (amount == 0):
+            return True
         else:
-            cmp += 1  # Seek lower denomination
-            continue
-    """
-    The while loop should terminate because of the following:
-    - The comparator variable (cmp) is incremented in each case except the else clause.
-    meaning that after going through the entire list, the loop guard will turn false.
-    - In the else clause, the comparator is not incremented, but the amount and coins variables will be reduced.
-     * Sufficiently low amount will trigger the outer else clause, causing a cmp increment.
-     * Sufficiently low coins will trigger the inner else-if clause, exiting the function.
-    """
-    return True
+            return False
+    denominations = [200, 100, 50, 20, 10, 5, 2, 1]
+    # Recursive case
+    if (coins == 1):
+        if (amt in denominations):
+            return True
+        else:
+            return False
+    for i in denominations:
+        if (exercise7((amt-i)/100, coins-1)):
+            return True
+    return False
 
 
 # for amt in range(50, 500, 4):
 #     for cns in range(1, 10):
 #         print(
 #             f"Amount: {amt/100} and Coins: {cns}, it is {exercise7(amt/100, cns)}")
-print(exercise7(0.13, 6))
+# print(exercise7(0.13, 6))
 # Exercise 8 - Five Letter Unscramble
 
 
@@ -386,3 +340,70 @@ def exercise10(green, yellow, gray):
 
 
 # exercise10({1: 'i', 3: 'c'}, {'e': {3}}, {'r', 'a', 's', 'd', 'f'})
+
+
+def exercise7_iterative(amount, coins):
+    # The Lookup Table - LUT
+    lookup_table = {
+        (0.00, 0): 0.0,
+        (0.01, 1): 0.01,
+        (0.02, 1): 0.02,
+        (0.05, 1): 0.05,
+        (0.1, 1): 0.1,
+        (0.2, 1): 0.2,
+        (0.5, 1): 0.5,
+        (1, 1): 1,
+        (2, 1): 2
+    }
+    lookup_key = (amount, int(coins))
+    if lookup_key in lookup_table:
+        return True
+    # (0,0) lookup already checked the case where they are both 0
+    if coins == 0 or amount == 0:
+        return False
+
+    coin_list = [2.0, 1.0, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01]
+    # Index of the denomination to consider for change (coin_list[cmp])
+    cmp = 0
+    while (cmp < len(coin_list)):
+        # Check if it's perfectly divisible by any single denomination (e.g. amt=50, coin=25)
+        for coin in coin_list:
+            # Convert from primary unit float to subunit (cents/pennies) integer representation
+            condition_1 = int(amount*100) % int(coin*100) == 0
+            # Coins must be appropriately exhausted
+            condition_2 = int(amount*100) / int(coin*100) == coins
+            if (condition_1 and condition_2):
+                # If the amount is a multiple of the coin (and fits coin quota), it's possible to make change
+                return True
+
+        if (amount >= coin_list[cmp]):
+            amount -= coin_list[cmp]
+            coins -= 1
+            amount = round(amount, 2)  # Python float fix (e.g 1.4-1)
+            # This check would prevent an extra iteration earlier.
+            if (amount, coins) in lookup_table:
+                return True
+            elif amount == 0:  # Revert change
+                amount += coin_list[cmp]
+                coins += 1
+                amount = round(amount, 2)  # Python float fix (e.g 1.4-1)
+                cmp += 1  # Seek lower denomination instead
+                continue
+            # Used the highest denomination every time and still need more coins, so, False.
+            elif coins == 0:
+                return False
+            else:
+                continue  # Keep trying with the same denomination
+
+        else:
+            cmp += 1  # Seek lower denomination
+            continue
+    """
+    The while loop should terminate because of the following:
+    - The comparator variable (cmp) is incremented in each case except the else clause.
+    meaning that after going through the entire list, the loop guard will turn false.
+    - In the else clause, the comparator is not incremented, but the amount and coins variables will be reduced.
+     * Sufficiently low amount will trigger the outer else clause, causing a cmp increment.
+     * Sufficiently low coins will trigger the inner else-if clause, exiting the function.
+    """
+    return True
