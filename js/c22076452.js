@@ -228,7 +228,7 @@ module.exports = {
      * @param {number} coins Number of coins
      * @returns {boolean} Whether the amount can be made with the given number of coins.
      */
-    exercise7: (amount,coins) => {
+    exercise7: (amount, coins) => {
         let amt = amount*100; // Convert amount to cents
         // Base cases
         if (coins==0){ // No coins left
@@ -287,13 +287,13 @@ module.exports = {
      * @param {Set<string>} gray Gray letter set
      * @returns {number} Cardinality of the wordle set
      */
-    exercise9: (green,yellow,gray) => {
+    exercise9: (green, yellow, gray) => {
         words = generateWordleSet(green,yellow,gray);
         return words.size;
     },
 
     // Exercise 10 - One Step of Wordle
-    exercise10: (green,yellow,gray) => {
+    exercise10: (green, yellow, gray) => {
         return undefined;
     },
 }
