@@ -1,12 +1,21 @@
 import copy
+
 """
 Coursework 1 - CMT120 Programming - Cardiff University
 Author: Selman Tabet - https://selman.io/
 """
+
 # Exercise 1 - Iris Species Classifier
 
 
 def exercise1(SepalLen, SepalWid, PetalLen, PetalWid):
+    """
+    Takes dimensions of a flower and returns its species based on the provided measurements.
+    @param SepalLen: Sepal Length
+    @param SepalWid: Sepal Width
+    @param PetalLen: Petal Length
+    @param PetalWid: Petal Width
+    """
     # Species decision tree
     if (PetalLen < 2.5):
         return "setosa"
@@ -34,10 +43,18 @@ def exercise1(SepalLen, SepalWid, PetalLen, PetalWid):
             else:
                 return "virginic"
 
+
 # Exercise 2 - Dog Breeds Standards
 
 
 def exercise2(breed, height, weight, male):
+    """
+    Returns whether the dog's measurements conforms to their respective breed's standards.
+    @param breed: Dog Breed
+    @param height: Dog Height
+    @param weight: Dog Weight
+    @param male: Whether the dog is male or not
+    """
     data_table = {
         (True, "Bulldog"): (15, 50),
         (True, "Dalmatian"): (24, 70),
@@ -59,27 +76,28 @@ def exercise2(breed, height, weight, male):
 
     # Check for standard compliance
 
-    # Out-of-bound version
+    # Out-of-bound version - The one being used.
     if (height > max_height or height < min_height or weight > max_weight or weight < min_weight):
         return False
     else:
         return True
 
-    # In-bound version
+    # In-bound version - Bonus implementation (Inactive)
     if (height <= max_height and height >= min_height and weight <= max_weight and weight >= min_weight):
         return True
     else:
         return False
 
 
-# Exercise 3 - Basic Statistics
+###### Exercise 3 Auxiliary Functions ######
 
-# Squares a number - helper function for map()
 def squared(x):
+    """Squares a number - helper function for map()"""
     return x*x
 
 
 def median(l):
+    """Median element from a list"""
     sorted_l = sorted(l)  # Sort list to find median
     mid_pos = len(l)//2  # Middle position
     # Negated index to find potential second "mid point" in case of even value length by reverse indexing
@@ -87,10 +105,17 @@ def median(l):
 
 
 def average(l):
+    """Average value of a number list"""
     return sum(l)/len(l)
 
 
+# Exercise 3 - Basic Statistics
+
 def exercise3(l):
+    """
+    Takes a list and applies a variety of statistical operations on it.
+    @param l: List of numbers
+    """
     l_squared = list(map(squared, l))  # Square each element
     return [(min(l), average(l), median(l), max(l)),
             (min(l_squared), average(l_squared), median(l_squared), max(l_squared))]
@@ -100,6 +125,12 @@ def exercise3(l):
 
 
 def exercise4(trans, init_state, input_list):
+    """
+    Takes an FSM transition table, an initial state and an input list and returns its output list.
+    @param trans: Transition Table
+    @param init_state: Initial State
+    @param input_list: Input List
+    """
     state = init_state
     trans_table = {}
     output = []
@@ -116,9 +147,13 @@ def exercise4(trans, init_state, input_list):
 
 
 def exercise5(filename):
+    """
+    Takes a filename and returns a tuple containing the number of alpha characters, numeric characters, symbol characters, words, sentences and paragraphs.
+    @param filename: Relative file path
+    """
     with open(filename, "r") as f:
         lines = f.readlines()
-
+        # Initialize lists
         alpha_chars = []
         numeric_chars = []
         symbol_chars = []
@@ -147,6 +182,7 @@ def exercise5(filename):
             # Extending this time because we're handling splitted strings (which are lists)
             words.extend(words_formatted)
 
+        # Filter out empty "words" for word count output
         words = list(filter(lambda x: x != '', words))
 
         # Combine all strings into one string for character counting.
@@ -154,7 +190,7 @@ def exercise5(filename):
         all_numeric = ''.join(numeric_chars)
         all_symbol = ''.join(symbol_chars)
         sentences = sum(1 for x in all_symbol if (
-            x == "?") or (x == "!") or (x == "."))
+            x == "?") or (x == "!") or (x == "."))  # Count sentences by counting sentence-terminating symbols
 
     return (len(all_alpha), len(all_numeric), len(all_symbol), len(words), sentences, paragraphs)
 
@@ -163,6 +199,10 @@ def exercise5(filename):
 
 
 def exercise6(l):
+    """
+    Takes a list and returns its depth.
+    @param l: List
+    """
     depth = 1  # As far as the first level is concerned, it's already 1
     for i in l:
         if isinstance(i, list):
@@ -175,21 +215,27 @@ def exercise6(l):
 
 
 def exercise7(amount, coins):
-    # Base case
-    amt = amount*100
-    if (coins == 0):
-        if (amount == 0):
+    """
+    Takes an amount and a number of coins and returns whether the amount can be made with the given number of coins.
+    @param amount: Amount
+    @param coins: Number of coins
+    """
+    # Base cases
+    amt = amount*100  # Convert to cents
+    if (coins == 0):  # No coins left
+        if (amount == 0):  # No amount left
             return True
-        else:
+        else:  # Amount left but no coins left
             return False
     denominations = [200, 100, 50, 20, 10, 5, 2, 1]
-    # Recursive case
     if (coins == 1):
-        if (amt in denominations):
+        if (amt in denominations):  # Check if amount is a valid denomination
             return True
         else:
             return False
-    for i in denominations:
+    # Recursive case
+    for i in denominations:  # Try all denominations against the remaining amount
+        # Recursively check if the remaining amount can be made with the remaining coins using the current denomination
         if (exercise7((amt-i)/100, coins-1)):
             return True
     return False
@@ -200,8 +246,16 @@ WORDLE_DIR = "test_data/wordle.txt"
 global permutations  # Global variable to store permutations
 permutations = []  # Initialize empty list on runtime
 
+########## Exercise 8 helper function ##########
+
 
 def generate_permutations(start, end=[]):
+    """
+    This function takes a string list as input and returns
+    an array of all possible permutations of the string.
+    @param start: The string list to be shuffled
+    @param end: This is used for recursive calls.
+    """
     # Default end value is an empty list, but the argument will be used for recursive calls
     if len(start) == 0:
         permutations.append("".join(end))
@@ -211,7 +265,14 @@ def generate_permutations(start, end=[]):
             generate_permutations(start[:i] + start[i+1:], end + start[i:i+1])
 
 
+# Exercise 8 - Five Letter Unscramble
+
+
 def exercise8(s):
+    """
+    Takes a string and returns the number of words in the wordle.txt file that can be made from the string.
+    @param s: The string to be used to construct the candidate set of words.
+    """
     with open(WORDLE_DIR, "r") as f:
         words = f.read().split("\n")
 
@@ -219,6 +280,7 @@ def exercise8(s):
     generate_permutations(list(s))
     filtered_permutations = list(set(permutations))  # Get rid of duplicates
     permutations.clear()  # Clear the global variable for the next call
+
     result = []
     for i in filtered_permutations:
         for j in words:
@@ -229,6 +291,12 @@ def exercise8(s):
 
 
 def generate_wordle_set(green, yellow, gray):
+    """
+    Takes the green and yellow dictionaries along with a gray wordle set, and returns a set of words that match the specifications.
+    @param green: Green wordle dictionary (key: position, value: letter)
+    @param yellow: Yellow wordle dictionary (key: letter, value: set of letter positions)
+    @param gray: Gray wordle set
+    """
     with open(WORDLE_DIR, "r") as f:
         words = f.read().split("\n")
     filtered_words = set(words)
@@ -257,7 +325,7 @@ def generate_wordle_set(green, yellow, gray):
 
     result = list(filtered_words)
 
-    # The final filter; removes all words that have yellow marked letters in in what we know to be the wrong position.
+    # The final filter; removes all words that have yellow marked letters in what we know to be the wrong position.
     for i in filtered_words:
         for j in enumerate(i):
             try:
@@ -272,20 +340,30 @@ def generate_wordle_set(green, yellow, gray):
 
     return result
 
+# Exercise 9 - Wordle Set
+
 
 def exercise9(green, yellow, gray):
+    """
+    Takes the green and yellow dictionaries along with a gray wordle set, and returns the cardinality of the set of words that match the specifications.
+    @param green: Green wordle dictionary (key: position, value: letter)
+    @param yellow: Yellow wordle dictionary (key: letter, value: set of letter positions)
+    @param gray: Gray wordle set
+    """
     # Cardinality of the set
     return len(generate_wordle_set(green, yellow, gray))
 
-
-# exercise9({1: 'i', 3: 'c'}, {'e': {3}}, {'r', 'a', 's', 'd', 'f'})
-# exercise9({2: 'a'}, {'a': {3}, 'i': {2}, 'l': {3, 4}, 'r': {1}},
-#           {'p', 'g', 'c', 'u', 'h', 'o', 'e', 't', 'm', 's'})
 
 # Exercise 10 - One Step of Wordle
 
 
 def exercise10(green, yellow, gray):
+    """
+    Takes the green and yellow dictionaries along with a gray wordle set, and returns the set of words with the best fit for the configuration.
+    @param green: Green wordle dictionary (key: position, value: letter)
+    @param yellow: Yellow wordle dictionary (key: letter, value: set of letter positions)
+    @param gray: Gray wordle set
+    """
     words = generate_wordle_set(green, yellow, gray)  # Retrieve the wordle set
     # This is will store cardinality scores as keys to the set of words with that score
     word_scores = {}
@@ -331,10 +409,19 @@ def exercise10(green, yellow, gray):
     return word_scores[lowest_score]
 
 
-# exercise10({1: 'i', 3: 'c'}, {'e': {3}}, {'r', 'a', 's', 'd', 'f'})
+"""
+This was my first attempt at exercise 7, which is the iterative version.
+I have since implemented a recursive version, which is much more elegant.
+But I'm keeping this here because I felt too bad to dump it after all the effort I put.
+"""
 
 
 def exercise7_iterative(amount, coins):
+    """
+    Takes an amount and a number of coins and returns whether the amount can be made with the given number of coins.
+    @param amount: Amount
+    @param coins: Number of coins
+    """
     # The Lookup Table - LUT
     lookup_table = {
         (0.00, 0): 0.0,
